@@ -7,7 +7,7 @@ import bcrypt from 'bcrypt';
 
 
 // Register User
-async function registerUser(req: Request, res: Response) {
+export const registerUser = async(req: Request, res: Response) => {
     const body: RegisterBody = req.body;
     try {
         const {
@@ -95,3 +95,5 @@ async function registerUser(req: Request, res: Response) {
         })
     }
 }
+
+export default {registerUser}
