@@ -3,6 +3,7 @@ import { type Request, type Response } from 'express';
 import { createNewUser, findUserByEmail } from '../models/user.model.js';
 import type { RegisterBody } from '../interfaces/auth.interface.js';
 import bcrypt from 'bcrypt';
+import pool from '../config/db.js';
 
 
 
@@ -96,4 +97,58 @@ export const registerUser = async(req: Request, res: Response) => {
     }
 }
 
-export default {registerUser}
+// Login User
+export const loginUser = async(req: Request, res:Response) => {
+    const {username, email,password} = req.body; 
+    const identifier = email || username;
+
+    // Find user 
+    const result = await pool.query(`
+        SELECT * FROM users 
+        WHERE  email = $1 OR username = $1`, [identifier])
+
+    const user = result.rows[0];
+    
+    if(!result){
+        return res.status(401).json({
+            message:"Unauthorized Access",
+        })
+    }
+    
+    if(!user){
+        return res.status(401).json({
+            message:"Unauthorized Access",
+        });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(
+        password,
+        user.password
+    );
+
+    if(!isPasswordCorrect){
+        return res.status(401).json({
+            message:"Invalid Credentials",
+        })
+    }
+
+    const token = jwt.sign({
+        id: user.id,
+        role: user.role,
+    },process.env.JWT_SECRET!,
+    {
+        expiresIn:"7d",
+    });
+
+    // Assign token
+    res.cookie("token", token, {
+        httpOnly:true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+    });
+
+    res.status(201).json({
+        username: user.username,
+        message:"Login Successfull", 
+    });
+};

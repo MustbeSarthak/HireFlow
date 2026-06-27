@@ -10,6 +10,7 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser()); // Parse Cookies
 
+// APIS
 app.use('/api/auth', authRoutes );
 
 app.use(errorHandler);
