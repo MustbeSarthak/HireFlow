@@ -1,3 +1,6 @@
+import type {Request} from "express";
+import type { JwtPayload } from "jsonwebtoken";
+
 export interface RegisterBody{
     username:string;
     email:string;
@@ -5,4 +8,9 @@ export interface RegisterBody{
     name:string;
     city:string;
     role?:"candidate" | "recruiter";
+}
+
+
+export interface AuthRequest extends Request{
+    user?: string | JwtPayload;
 }
