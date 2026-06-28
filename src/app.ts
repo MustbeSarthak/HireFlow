@@ -4,6 +4,7 @@ import errorHandler from './middleware/errorHandler.js';
 import cookieParser from 'cookie-parser';
 import authRoutes from "./routes/users.routes.js";
 
+
 const app = express();
 
 app.use(cors());
